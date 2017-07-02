@@ -1,6 +1,5 @@
 #osquery.io wrapper
 import fabric.api as fabric
-import pprint
 import json
 
 OSQUERY_PATH = 'docker run kolide/osquery osqueryi' #Using docker for dev reasons
