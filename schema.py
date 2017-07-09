@@ -16,6 +16,13 @@ class EtcProtocols(graphene.ObjectType):
     alias = graphene.String()
     comment = graphene.String()
 
+class EtcServices(graphene.ObjectType):
+    name = graphene.String()
+    port = graphene.String()
+    protocol = graphene.String()
+    aliases = graphene.String()
+    comment = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -37,6 +44,18 @@ class Query(graphene.ObjectType):
                     name=item['name'],
                     number=item['number'],
                     alias=item['alias'],
+                    comment=item['comment']
+            )
+
+    etc_services = graphene.List(EtcServices)
+
+    def resolve_etc_services(self, args, context, info):
+        for item in query.run('select * from etc_services'):
+            yield EtcServices(
+                    name=item['name'],
+                    port=item['port'],
+                    protocol=item['protocol'],
+                    aliases=item['aliases'],
                     comment=item['comment']
             )
 
