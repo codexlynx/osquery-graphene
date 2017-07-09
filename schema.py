@@ -23,6 +23,14 @@ class EtcServices(graphene.ObjectType):
     aliases = graphene.String()
     comment = graphene.String()
 
+class InterfaceAddresses(graphene.ObjectType):
+    interface = graphene.String()
+    address = graphene.String()
+    mask = graphene.String()
+    broadcast = graphene.String()
+    point_to_point = graphene.String()
+    #type = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -57,6 +65,19 @@ class Query(graphene.ObjectType):
                     protocol=item['protocol'],
                     aliases=item['aliases'],
                     comment=item['comment']
+            )
+
+    interface_addresses = graphene.List(InterfaceAddresses)
+
+    def resolve_interface_addresses(self, args, context, info):
+        for item in query.run('select * from interface_addresses'):
+            yield InterfaceAddresses(
+                    interface=item['interface'],
+                    address=item['address'],
+                    mask=item['mask'],
+                    broadcast=item['broadcast'],
+                    point_to_point=item['point_to_point']
+                    #type=item['type']
             )
 
 schema = graphene.Schema(query=Query)
