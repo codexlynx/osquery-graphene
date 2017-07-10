@@ -31,6 +31,38 @@ class InterfaceAddresses(graphene.ObjectType):
     point_to_point = graphene.String()
     #type = graphene.String()
 
+class InterfaceDetails(graphene.ObjectType):
+    interface = graphene.String()
+    mac = graphene.String()
+    type = graphene.String()
+    mtu = graphene.String()
+    metric = graphene.String()
+    flags = graphene.String()
+    ipackets = graphene.String()
+    opackets = graphene.String()
+    ibytes = graphene.String()
+    obytes = graphene.String()
+    ierrors = graphene.String()
+    oerrors = graphene.String()
+    idrops = graphene.String()
+    odrops = graphene.String()
+    last_change = graphene.String()
+    description = graphene.String()
+    manufacturer = graphene.String()
+    connection_id = graphene.String()
+    connection_status = graphene.String()
+    enabled = graphene.String()
+    physical_adapter = graphene.String()
+    speed = graphene.String()
+    dhcp_enabled = graphene.String()
+    dhcp_lease_expires = graphene.String()
+    dhcp_lease_obtained = graphene.String()
+    dhcp_server = graphene.String()
+    dns_domain = graphene.String()
+    dns_domain_suffix_search_order = graphene.String()
+    dns_host_name = graphene.String()
+    dns_server_search_order = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -78,6 +110,43 @@ class Query(graphene.ObjectType):
                     broadcast=item['broadcast'],
                     point_to_point=item['point_to_point']
                     #type=item['type']
+            )
+
+    interface_details = graphene.List(InterfaceDetails)
+
+    def resolve_interface_details(self, args, context, info):
+        for item in query.run('select * from interface_details'):
+            yield InterfaceDetails(
+                    interface=item['interface'],
+                    mac=item['mac'],
+                    type=item['type'],
+                    mtu =item['mtu'],
+                    metric=item['metric'],
+                    #flags=item['flags'],
+                    ipackets=item['ipackets'],
+                    opackets=item['opackets'],
+                    ibytes=item['ibytes'],
+                    obytes=item['obytes'],
+                    ierrors=item['ierrors'],
+                    oerrors=item['oerrors'],
+                    idrops=item['idrops'],
+                    odrops=item['odrops'],
+                    last_change=item['last_change'],
+                    description=item['description'],
+                    manufacturer=item['manufacturer'],
+                    connection_id=item['connection_id'],
+                    connection_status=item['connection_status'],
+                    enabled=item['enabled'],
+                    physical_adapter=item['physical_adapter'],
+                    speed=item['speed'],
+                    dhcp_enabled=item['dhcp_enabled'],
+                    dhcp_lease_expires=item['dhcp_lease_expires'],
+                    dhcp_lease_obtained=item['dhcp_lease_obtained'],
+                    dhcp_server=item['dhcp_server'],
+                    dns_domain=item['dns_domain'],
+                    dns_domain_suffix_search_order=item['dns_domain_suffix_search_order'],
+                    dns_host_name=item['dns_host_name'],
+                    dns_server_search_order=item['dns_server_search_order']
             )
 
 schema = graphene.Schema(query=Query)
