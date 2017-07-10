@@ -84,6 +84,17 @@ class LoggedInUsers(graphene.ObjectType):
     time = graphene.String()
     pid = graphene.String()
 
+class OsVersion(graphene.ObjectType):
+    name = graphene.String()
+    version = graphene.String()
+    major = graphene.String()
+    minor = graphene.String()
+    patch = graphene.String()
+    build = graphene.String()
+    platform = graphene.String()
+    platform_like = graphene.String()
+    codename = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -204,6 +215,22 @@ class Query(graphene.ObjectType):
                     host=item['host'],
                     time=item['time'],
                     pid=item['pid']
+            )
+
+    os_version = graphene.List(OsVersion)
+
+    def resolve_os_version(self, args, context, info):
+        for item in query.run('select * from os_version'):
+            yield OsVersion(
+                    name=item['name'],
+                    version=item['version'],
+                    major=item['major'],
+                    minor=item['minor'],
+                    patch=item['patch'],
+                    build=item['build'],
+                    platform=item['platform'],
+                    platform_like=item['platform_like'],
+                    codename=item['codename']
             )
 
 schema = graphene.Schema(query=Query)
