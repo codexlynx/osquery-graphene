@@ -76,6 +76,14 @@ class ListeningPorts(graphene.ObjectType):
     family = graphene.String()
     address = graphene.String()
 
+class LoggedInUsers(graphene.ObjectType):
+    type = graphene.String()
+    user = graphene.String()
+    tty = graphene.String()
+    host = graphene.String()
+    time = graphene.String()
+    pid = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -183,6 +191,19 @@ class Query(graphene.ObjectType):
                     protocol=item['protocol'],
                     family=item['family'],
                     address=item['address']
+            )
+
+    logged_in_users = graphene.List(LoggedInUsers)
+
+    def resolve_logged_in_users(self, args, context, info):
+        for item in query.run('select * from logged_in_users'):
+            yield LoggedInUsers(
+                    type=item['type'],
+                    user=item['user'],
+                    tty=item['tty'],
+                    host=item['host'],
+                    time=item['time'],
+                    pid=item['pid']
             )
 
 schema = graphene.Schema(query=Query)
