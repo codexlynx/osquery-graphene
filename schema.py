@@ -63,6 +63,12 @@ class InterfaceDetails(graphene.ObjectType):
     dns_host_name = graphene.String()
     dns_server_search_order = graphene.String()
 
+class KernelInfo(graphene.ObjectType):
+    version = graphene.String()
+    arguments = graphene.String()
+    path = graphene.String()
+    device = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -148,5 +154,17 @@ class Query(graphene.ObjectType):
                     dns_host_name=item['dns_host_name'],
                     dns_server_search_order=item['dns_server_search_order']
             )
+
+    kernel_info = graphene.List(KernelInfo)
+
+    def resolve_kernel_info(self, args, context, info):
+        for item in query.run('select * from kernel_info'):
+            yield KernelInfo(
+                    version=item['version'],
+                    arguments=item['arguments'],
+                    path=item['path'],
+                    device=item['device']
+            )
+
 
 schema = graphene.Schema(query=Query)
