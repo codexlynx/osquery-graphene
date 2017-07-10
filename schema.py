@@ -69,6 +69,13 @@ class KernelInfo(graphene.ObjectType):
     path = graphene.String()
     device = graphene.String()
 
+class ListeningPorts(graphene.ObjectType):
+    pid = graphene.String()
+    port = graphene.String()
+    protocol = graphene.String()
+    family = graphene.String()
+    address = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -166,5 +173,16 @@ class Query(graphene.ObjectType):
                     device=item['device']
             )
 
+    listening_ports = graphene.List(ListeningPorts)
+
+    def resolve_listening_ports(self, args, context, info):
+        for item in query.run('select * from listening_ports'):
+            yield ListeningPorts(
+                    pid=item['pid'],
+                    port=item['port'],
+                    protocol=item['protocol'],
+                    family=item['family'],
+                    address=item['address']
+            )
 
 schema = graphene.Schema(query=Query)
