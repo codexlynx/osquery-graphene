@@ -95,6 +95,16 @@ class OsVersion(graphene.ObjectType):
     platform_like = graphene.String()
     codename = graphene.String()
 
+class PlatformInfo(graphene.ObjectType):
+    vendor = graphene.String()
+    version = graphene.String()
+    date = graphene.String()
+    revision = graphene.String()
+    address = graphene.String()
+    size = graphene.String()
+    volume_size = graphene.String()
+    extra = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -231,6 +241,21 @@ class Query(graphene.ObjectType):
                     platform=item['platform'],
                     platform_like=item['platform_like'],
                     codename=item['codename']
+            )
+
+    platform_info = graphene.List(PlatformInfo)
+
+    def resolve_platform_info(sef, args, context, info):
+        for item in query.run('select * from platform_info'):
+            yield PlatformInfo(
+                    vendor=item['vendor'],
+                    version=item['version'],
+                    date=date['date'],
+                    revision=item['revision'],
+                    address=item['address'],
+                    size=item['size'],
+                    volume_size=item['volume_size'],
+                    extra=item['extra']
             )
 
 schema = graphene.Schema(query=Query)
