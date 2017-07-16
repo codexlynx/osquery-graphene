@@ -105,6 +105,15 @@ class PlatformInfo(graphene.ObjectType):
     volume_size = graphene.String()
     extra = graphene.String()
 
+class ProcessOpenSockets(graphene.ObjectType):
+    pid = graphene.String()
+    fd = graphene.String()
+    socket = graphene.String()
+    family = graphene.String()
+    protocol = graphene.String()
+    local_address = graphene.String()
+    remote_address = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -245,7 +254,7 @@ class Query(graphene.ObjectType):
 
     platform_info = graphene.List(PlatformInfo)
 
-    def resolve_platform_info(sef, args, context, info):
+    def resolve_platform_info(self, args, context, info):
         for item in query.run('select * from platform_info'):
             yield PlatformInfo(
                     vendor=item['vendor'],
@@ -256,6 +265,20 @@ class Query(graphene.ObjectType):
                     size=item['size'],
                     volume_size=item['volume_size'],
                     extra=item['extra']
+            )
+
+    process_open_sockets = graphene.List(ProcessOpenSockets)
+
+    def resolve_process_open_sockets(self, args, context, info):
+        for item in query.run('select * from process_open_sockets'):
+            yield ProcessOpenSockets(
+                    pid=item['pid'],
+                    fd=item['fd'],
+                    socket=item['socket'],
+                    family=item['family'],
+                    protocol=item['protocol'],
+                    local_address=item['local_address'],
+                    remote_address=remote_address['remote_address']
             )
 
 schema = graphene.Schema(query=Query)
