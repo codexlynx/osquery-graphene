@@ -16,6 +16,10 @@ class Cpuid(graphene.ObjectType):
     output_bit = graphene.String()
     input_eax = graphene.String()
 
+class EtcHosts(graphene.ObjectType):
+    address = graphene.String()
+    hostnames = graphene.String()
+
 class EtcProtocols(graphene.ObjectType):
     name = graphene.String()
     number = graphene.String()
@@ -223,6 +227,15 @@ class Query(graphene.ObjectType):
                     output_register=item['output_register'],
                     output_bit=item['output_bit'],
                     input_eax=item['input_eax']
+            )
+
+    etc_hosts = graphene.List(EtcHosts)
+
+    def resolve_etc_hosts(self, args, context, info):
+        for item in query.run('select * from etc_hosts'):
+            yield EtcHosts(
+                    address=item['address'],
+                    hostnames=item['hostnames']
             )
 
     etc_protocols = graphene.List(EtcProtocols)
