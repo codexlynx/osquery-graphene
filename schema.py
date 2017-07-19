@@ -114,6 +114,32 @@ class ProcessOpenSockets(graphene.ObjectType):
     local_address = graphene.String()
     remote_address = graphene.String()
 
+class Processes(graphene.ObjectType):
+    pid = graphene.String()
+    name = graphene.String()
+    path = graphene.String()
+    cmdline = graphene.String()
+    state = graphene.String()
+    cwd = graphene.String()
+    root = graphene.String()
+    uid = graphene.String()
+    gid = graphene.String()
+    euid = graphene.String()
+    egid = graphene.String()
+    suid = graphene.String()
+    sgid = graphene.String()
+    on_disk = graphene.String()
+    wired_size = graphene.String()
+    resident_size = graphene.String()
+    total_size = graphene.String()
+    user_time = graphene.String()
+    system_time = graphene.String()
+    start_time = graphene.String()
+    parent = graphene.String()
+    pgroup = graphene.String()
+    threads = graphene.String()
+    nice = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -279,6 +305,37 @@ class Query(graphene.ObjectType):
                     protocol=item['protocol'],
                     local_address=item['local_address'],
                     remote_address=remote_address['remote_address']
+            )
+
+    processes = graphene.List(Processes)
+
+    def resolve_processes(self, args, context, info):
+        for item in query.run('select * from processes'):
+            yield Processes(
+                    pid=item['pid'],
+                    name=item['name'],
+                    path=item['path'],
+                    cmdline=item['cmdline'],
+                    state=item['state'],
+                    cwd=item['cwd'],
+                    root=item['root'],
+                    uid=item['uid'],
+                    gid=item['gid'],
+                    euid=item['euid'],
+                    egid=item['egid'],
+                    suid=item['suid'],
+                    sgid=item['sgid'],
+                    on_disk=item['on_disk'],
+                    wired_size=item['wired_size'],
+                    resident_size=item['resident_size'],
+                    total_size=item['total_size'],
+                    user_time=item['user_time'],
+                    system_time=item['system_time'],
+                    start_time=item['start_time'],
+                    parent=item['parent'],
+                    pgroup=item['pgroup'],
+                    threads=item['threads'],
+                    nice=item['nice']
             )
 
 schema = graphene.Schema(query=Query)
