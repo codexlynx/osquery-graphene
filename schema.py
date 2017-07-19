@@ -160,6 +160,22 @@ class StartupItems(graphene.ObjectType):
     status = graphene.String()
     username = graphene.String()
 
+class SystemInfo(graphene.ObjectType):
+    hostname = graphene.String()
+    uuid = graphene.String()
+    cpu_type = graphene.String()
+    cpu_subtype = graphene.String()
+    cpu_brand = graphene.String()
+    cpu_physical_cores = graphene.String()
+    cpu_logical_cores = graphene.String()
+    physical_memory = graphene.String()
+    hardware_vendor = graphene.String()
+    hardware_model = graphene.String()
+    hardware_version = graphene.String()
+    hardware_serial = graphene.String()
+    computer_name = graphene.String()
+    #local_hostname = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -388,5 +404,25 @@ class Query(graphene.ObjectType):
                     username=item['username']
             )
 
+    system_info = graphene.List(SystemInfo)
+
+    def resolve_system_info(self, args, context, info):
+        for item in query.run('select * from system_info'):
+            yield SystemInfo(
+                    hostname=item['hostname'],
+                    uuid=item['uuid'],
+                    cpu_type=item['cpu_type'],
+                    cpu_subtype=item['cpu_subtype'],
+                    cpu_brand=item['cpu_brand'],
+                    cpu_physical_cores=item['cpu_physical_cores'],
+                    cpu_logical_cores=item['cpu_logical_cores'],
+                    physical_memory=item['physical_memory'],
+                    hardware_vendor=item['hardware_vendor'],
+                    hardware_model=item['hardware_model'],
+                    hardware_version=item['hardware_version'],
+                    hardware_serial=item['hardware_serial'],
+                    computer_name=item['computer_name']#,
+                    #local_hostname=item['local_hostname']
+            )
 
 schema = graphene.Schema(query=Query)
