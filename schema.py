@@ -151,6 +151,15 @@ class Routes(graphene.ObjectType):
     metric = graphene.String()
     type = graphene.String()
 
+class StartupItems(graphene.ObjectType):
+    name = graphene.String()
+    path = graphene.String()
+    args = graphene.String()
+    type = graphene.String()
+    source = graphene.String()
+    status = graphene.String()
+    username = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -364,5 +373,20 @@ class Query(graphene.ObjectType):
                     metric=item['metric'],
                     type=item['type']
             )
+
+    startup_items = graphene.List(StartupItems)
+
+    def resolve_startup_items(self, args, context, info):
+        for item in query.run('select * from startup_items'):
+            yield StartupItems(
+                    name=item['name'],
+                    path=item['path'],
+                    args=item['args'],
+                    type=item['type'],
+                    source=item['source'],
+                    status=item['status'],
+                    username=item['username']
+            )
+
 
 schema = graphene.Schema(query=Query)
