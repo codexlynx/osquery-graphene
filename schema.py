@@ -140,6 +140,17 @@ class Processes(graphene.ObjectType):
     threads = graphene.String()
     nice = graphene.String()
 
+class Routes(graphene.ObjectType):
+    destination = graphene.String()
+    netmask = graphene.String()
+    gateway = graphene.String()
+    source = graphene.String()
+    flags = graphene.String()
+    interface = graphene.String()
+    mtu = graphene.String()
+    metric = graphene.String()
+    type = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -336,6 +347,22 @@ class Query(graphene.ObjectType):
                     pgroup=item['pgroup'],
                     threads=item['threads'],
                     nice=item['nice']
+            )
+
+    routes = graphene.List(Routes)
+
+    def resolve_routes(self, args, context, info):
+        for item in query.run('select * from routes'):
+            yield Routes(
+                    destination=item['destination'],
+                    netmask=item['netmask'],
+                    gateway=item['gateway'],
+                    source=item['source'],
+                    flags=item['flags'],
+                    interface=item['interface'],
+                    mtu=item['mtu'],
+                    metric=item['metric'],
+                    type=item['type']
             )
 
 schema = graphene.Schema(query=Query)
