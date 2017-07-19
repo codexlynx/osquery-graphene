@@ -3,6 +3,12 @@ import osquery
 
 query = osquery.OSQuery()
 
+class ArpCache(graphene.ObjectType):
+    address = graphene.String()
+    mac = graphene.String()
+    interface = graphene.String()
+    permanent = graphene.String()
+
 class Cpuid(graphene.ObjectType):
     feature = graphene.String()
     value = graphene.String()
@@ -195,6 +201,18 @@ class Users(graphene.ObjectType):
     uuid = graphene.String()
 
 class Query(graphene.ObjectType):
+
+    arp_cache = graphene.List(ArpCache)
+
+    def resolve_arp_cache(self, args, context, info):
+        for item in query.run('select ^from arp_cache'):
+            yield ArpCache(
+                    address=item['address'],
+                    mac=item['mac'],
+                    interface=item['interface'],
+                    permanent=item['permanent']
+            )
+
     cpuid = graphene.List(Cpuid)
 
     def resolve_cpuid(self, args, context, info):
