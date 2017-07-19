@@ -176,6 +176,13 @@ class SystemInfo(graphene.ObjectType):
     computer_name = graphene.String()
     #local_hostname = graphene.String()
 
+class Uptime(graphene.ObjectType):
+    days = graphene.String()
+    hours = graphene.String()
+    minutes = graphene.String()
+    seconds = graphene.String()
+    total_seconds = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -423,6 +430,18 @@ class Query(graphene.ObjectType):
                     hardware_serial=item['hardware_serial'],
                     computer_name=item['computer_name']#,
                     #local_hostname=item['local_hostname']
+            )
+
+    uptime = graphene.List(Uptime)
+
+    def resolve_uptime(self, args, context, info):
+        for item in query.run('select * from uptime'):
+            yield Uptime(
+                    days=item['days'],
+                    hours=item['hours'],
+                    minutes=item['minutes'],
+                    seconds=item['seconds'],
+                    total_seconds=item['total_seconds']
             )
 
 schema = graphene.Schema(query=Query)
