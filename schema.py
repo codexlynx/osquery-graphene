@@ -183,6 +183,17 @@ class Uptime(graphene.ObjectType):
     seconds = graphene.String()
     total_seconds = graphene.String()
 
+class Users(graphene.ObjectType):
+    uid = graphene.String()
+    gid = graphene.String()
+    gid_signed = graphene.String()
+    uid_signed = graphene.String()
+    username = graphene.String()
+    description = graphene.String()
+    directory = graphene.String()
+    shell = graphene.String()
+    uuid = graphene.String()
+
 class Query(graphene.ObjectType):
     cpuid = graphene.List(Cpuid)
 
@@ -442,6 +453,22 @@ class Query(graphene.ObjectType):
                     minutes=item['minutes'],
                     seconds=item['seconds'],
                     total_seconds=item['total_seconds']
+            )
+
+    users = graphene.List(Users)
+
+    def resolve_users(self, args, context, info):
+        for item in query.run('select * from users'):
+            yield Users(
+                    uid=item['uid'],
+                    gid=item['gid'],
+                    gid_signed=item['gid_signed'],
+                    uid_signed=item['uid_signed'],
+                    username=item['username'],
+                    description=item['description'],
+                    directory=item['directory'],
+                    shell=item['shell'],
+                    uuid=item['uuid']
             )
 
 schema = graphene.Schema(query=Query)
