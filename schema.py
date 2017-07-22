@@ -212,6 +212,11 @@ class Users(graphene.ObjectType):
     shell = graphene.String()
     uuid = graphene.String()
 
+'''
+class About(graphene.ObjectType):
+    name = graphene.String()
+'''
+
 class Query(graphene.ObjectType):
 
     arp_cache = graphene.List(ArpCache)
@@ -525,5 +530,10 @@ class Query(graphene.ObjectType):
                     shell=item['shell'],
                     uuid=item['uuid']
             )
+
+    test = graphene.String()
+
+    def resolve_test(self, args, context, info):
+        return 'test'
 
 schema = graphene.Schema(query=Query)
