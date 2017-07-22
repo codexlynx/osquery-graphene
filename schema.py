@@ -33,6 +33,13 @@ class EtcServices(graphene.ObjectType):
     aliases = graphene.String()
     comment = graphene.String()
 
+class Hash(graphene.ObjectType):
+    path = graphene.String()
+    directory = graphene.String()
+    md5 = graphene.String()
+    sha1 = graphene.String()
+    sha256 = graphene.String()
+
 class InterfaceAddresses(graphene.ObjectType):
     interface = graphene.String()
     address = graphene.String()
@@ -259,6 +266,22 @@ class Query(graphene.ObjectType):
                     protocol=item['protocol'],
                     aliases=item['aliases'],
                     comment=item['comment']
+            )
+
+    hash = graphene.List(Hash, directory=graphene.String(),
+                               path=graphene.String()
+    )
+
+    def resolve_hash(self, args, context, info):
+        if args.get('directory'): where = 'directory = \\"%s\\"' % args.get('directory')
+        if args.get('path'): where = 'path = \\"%s\\"' % args.get('path')
+        for item in query.run('select * from hash where %s' % where):
+            yield Hash(
+                    path=item['path'],
+                    directory=item['directory'],
+                    md5=item['md5'],
+                    sha1=item['sha1'],
+                    sha256=item['sha256']
             )
 
     interface_addresses = graphene.List(InterfaceAddresses)
