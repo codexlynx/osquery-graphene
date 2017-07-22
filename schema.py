@@ -1,5 +1,6 @@
 import graphene
 import osquery
+import utils
 
 query = osquery.OSQuery()
 
@@ -273,8 +274,8 @@ class Query(graphene.ObjectType):
     )
 
     def resolve_hash(self, args, context, info):
-        if args.get('directory'): where = 'directory = \\"%s\\"' % args.get('directory')
-        if args.get('path'): where = 'path = \\"%s\\"' % args.get('path')
+        if args.get('directory'): where = 'directory = \\"%s\\"' % utils.sanitize(args.get('directory'))
+        if args.get('path'): where = 'path = \\"%s\\"' % utils.sanitize(args.get('path'))
         for item in query.run('select * from hash where %s' % where):
             yield Hash(
                     path=item['path'],
