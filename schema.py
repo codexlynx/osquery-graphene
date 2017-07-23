@@ -1,14 +1,9 @@
+from schema_types import arp_cache
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
-
-class ArpCache(graphene.ObjectType):
-    address = graphene.String()
-    mac = graphene.String()
-    interface = graphene.String()
-    permanent = graphene.String()
 
 class Cpuid(graphene.ObjectType):
     feature = graphene.String()
@@ -212,18 +207,13 @@ class Users(graphene.ObjectType):
     shell = graphene.String()
     uuid = graphene.String()
 
-'''
-class About(graphene.ObjectType):
-    name = graphene.String()
-'''
-
 class Query(graphene.ObjectType):
 
-    arp_cache = graphene.List(ArpCache)
+    arp_cache = graphene.List(arp_cache.ArpCache)
 
     def resolve_arp_cache(self, args, context, info):
-        for item in query.run('select ^from arp_cache'):
-            yield ArpCache(
+        for item in query.run('select * from arp_cache'):
+            yield arp_cache.ArpCache(
                     address=item['address'],
                     mac=item['mac'],
                     interface=item['interface'],
