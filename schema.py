@@ -1,17 +1,10 @@
 from schema_types import arp_cache, cpuid, etc_hosts, \
-                         etc_protocols
+                         etc_protocols, etc_services
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
-
-class EtcServices(graphene.ObjectType):
-    name = graphene.String()
-    port = graphene.String()
-    protocol = graphene.String()
-    aliases = graphene.String()
-    comment = graphene.String()
 
 class Hash(graphene.ObjectType):
     path = graphene.String()
@@ -236,11 +229,11 @@ class Query(graphene.ObjectType):
                     comment=item['comment']
             )
 
-    etc_services = graphene.List(EtcServices)
+    etc_services = graphene.List(etc_services.EtcServices)
 
     def resolve_etc_services(self, args, context, info):
         for item in query.run('select * from etc_services'):
-            yield EtcServices(
+            yield etc_services.EtcServices(
                     name=item['name'],
                     port=item['port'],
                     protocol=item['protocol'],
