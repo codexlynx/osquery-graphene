@@ -1,16 +1,9 @@
-from schema_types import arp_cache
+from schema_types import arp_cache, cpuid
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
-
-class Cpuid(graphene.ObjectType):
-    feature = graphene.String()
-    value = graphene.String()
-    output_register = graphene.String()
-    output_bit = graphene.String()
-    input_eax = graphene.String()
 
 class EtcHosts(graphene.ObjectType):
     address = graphene.String()
@@ -220,11 +213,11 @@ class Query(graphene.ObjectType):
                     permanent=item['permanent']
             )
 
-    cpuid = graphene.List(Cpuid)
+    cpuid = graphene.List(cpuid.Cpuid)
 
     def resolve_cpuid(self, args, context, info):
         for item in query.run('select * from cpuid'):
-            yield Cpuid(
+            yield cpuid.Cpuid(
                     feature=item['feature'],
                     value=item['value'],
                     output_register=item['output_register'],
