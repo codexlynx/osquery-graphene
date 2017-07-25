@@ -4,24 +4,14 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          interface_details, kernel_info, \
                          listening_ports, logged_in_users, \
                          os_version, platform_info, \
-                         process_open_sockets, processes
+                         process_open_sockets, processes, \
+                         routes
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class Routes(graphene.ObjectType):
-    destination = graphene.String()
-    netmask = graphene.String()
-    gateway = graphene.String()
-    source = graphene.String()
-    flags = graphene.String()
-    interface = graphene.String()
-    mtu = graphene.String()
-    metric = graphene.String()
-    type = graphene.String()
 
 class StartupItems(graphene.ObjectType):
     name = graphene.String()
@@ -301,11 +291,11 @@ class Query(graphene.ObjectType):
                     nice=item['nice']
             )
 
-    routes = graphene.List(Routes)
+    routes = graphene.List(routes.Routes)
 
     def resolve_routes(self, args, context, info):
         for item in query.run('select * from routes'):
-            yield Routes(
+            yield routes.Routes(
                     destination=item['destination'],
                     netmask=item['netmask'],
                     gateway=item['gateway'],
