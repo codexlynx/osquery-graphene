@@ -1,17 +1,11 @@
 from schema_types import arp_cache, cpuid, etc_hosts, \
-                         etc_protocols, etc_services
+                         etc_protocols, etc_services, \
+                         hash
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
-
-class Hash(graphene.ObjectType):
-    path = graphene.String()
-    directory = graphene.String()
-    md5 = graphene.String()
-    sha1 = graphene.String()
-    sha256 = graphene.String()
 
 class InterfaceAddresses(graphene.ObjectType):
     interface = graphene.String()
@@ -241,7 +235,7 @@ class Query(graphene.ObjectType):
                     comment=item['comment']
             )
 
-    hash = graphene.List(Hash, directory=graphene.String(),
+    hash = graphene.List(hash.Hash, directory=graphene.String(),
                                path=graphene.String()
     )
 
@@ -249,7 +243,7 @@ class Query(graphene.ObjectType):
         if args.get('directory'): where = 'directory = \\"%s\\"' % utils.sanitize(args.get('directory'))
         if args.get('path'): where = 'path = \\"%s\\"' % utils.sanitize(args.get('path'))
         for item in query.run('select * from hash where %s' % where):
-            yield Hash(
+            yield hash.Hash(
                     path=item['path'],
                     directory=item['directory'],
                     md5=item['md5'],
