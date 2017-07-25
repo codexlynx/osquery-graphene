@@ -1,19 +1,12 @@
 from schema_types import arp_cache, cpuid, etc_hosts, \
                          etc_protocols, etc_services, \
-                         hash
+                         hash, interface_addresses
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-class InterfaceAddresses(graphene.ObjectType):
-    interface = graphene.String()
-    address = graphene.String()
-    mask = graphene.String()
-    broadcast = graphene.String()
-    point_to_point = graphene.String()
-    #type = graphene.String()
 
 class InterfaceDetails(graphene.ObjectType):
     interface = graphene.String()
@@ -251,11 +244,11 @@ class Query(graphene.ObjectType):
                     sha256=item['sha256']
             )
 
-    interface_addresses = graphene.List(InterfaceAddresses)
+    interface_addresses = graphene.List(interface_addresses.InterfaceAddresses)
 
     def resolve_interface_addresses(self, args, context, info):
         for item in query.run('select * from interface_addresses'):
-            yield InterfaceAddresses(
+            yield interface_addresses.InterfaceAddresses(
                     interface=item['interface'],
                     address=item['address'],
                     mask=item['mask'],
