@@ -2,24 +2,14 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          etc_protocols, etc_services, \
                          hash, interface_addresses, \
                          interface_details, kernel_info, \
-                         listening_ports, logged_in_users
+                         listening_ports, logged_in_users, \
+                         os_version
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class OsVersion(graphene.ObjectType):
-    name = graphene.String()
-    version = graphene.String()
-    major = graphene.String()
-    minor = graphene.String()
-    patch = graphene.String()
-    build = graphene.String()
-    platform = graphene.String()
-    platform_like = graphene.String()
-    codename = graphene.String()
 
 class PlatformInfo(graphene.ObjectType):
     vendor = graphene.String()
@@ -279,11 +269,11 @@ class Query(graphene.ObjectType):
                     pid=item['pid']
             )
 
-    os_version = graphene.List(OsVersion)
+    os_version = graphene.List(os_version.OsVersion)
 
     def resolve_os_version(self, args, context, info):
         for item in query.run('select * from os_version'):
-            yield OsVersion(
+            yield os_version.OsVersion(
                     name=item['name'],
                     version=item['version'],
                     major=item['major'],
