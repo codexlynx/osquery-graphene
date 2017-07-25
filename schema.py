@@ -1,20 +1,14 @@
 from schema_types import arp_cache, cpuid, etc_hosts, \
                          etc_protocols, etc_services, \
                          hash, interface_addresses, \
-                         interface_details, kernel_info
+                         interface_details, kernel_info, \
+                         listening_ports
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class ListeningPorts(graphene.ObjectType):
-    pid = graphene.String()
-    port = graphene.String()
-    protocol = graphene.String()
-    family = graphene.String()
-    address = graphene.String()
 
 class LoggedInUsers(graphene.ObjectType):
     type = graphene.String()
@@ -268,11 +262,11 @@ class Query(graphene.ObjectType):
                     device=item['device']
             )
 
-    listening_ports = graphene.List(ListeningPorts)
+    listening_ports = graphene.List(listening_ports.ListeningPorts)
 
     def resolve_listening_ports(self, args, context, info):
         for item in query.run('select * from listening_ports'):
-            yield ListeningPorts(
+            yield listening_ports.ListeningPorts(
                     pid=item['pid'],
                     port=item['port'],
                     protocol=item['protocol'],
