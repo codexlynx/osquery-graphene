@@ -1,44 +1,13 @@
 from schema_types import arp_cache, cpuid, etc_hosts, \
                          etc_protocols, etc_services, \
-                         hash, interface_addresses
+                         hash, interface_addresses, \
+                         interface_details
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class InterfaceDetails(graphene.ObjectType):
-    interface = graphene.String()
-    mac = graphene.String()
-    type = graphene.String()
-    mtu = graphene.String()
-    metric = graphene.String()
-    flags = graphene.String()
-    ipackets = graphene.String()
-    opackets = graphene.String()
-    ibytes = graphene.String()
-    obytes = graphene.String()
-    ierrors = graphene.String()
-    oerrors = graphene.String()
-    idrops = graphene.String()
-    odrops = graphene.String()
-    last_change = graphene.String()
-    description = graphene.String()
-    manufacturer = graphene.String()
-    connection_id = graphene.String()
-    connection_status = graphene.String()
-    enabled = graphene.String()
-    physical_adapter = graphene.String()
-    speed = graphene.String()
-    dhcp_enabled = graphene.String()
-    dhcp_lease_expires = graphene.String()
-    dhcp_lease_obtained = graphene.String()
-    dhcp_server = graphene.String()
-    dns_domain = graphene.String()
-    dns_domain_suffix_search_order = graphene.String()
-    dns_host_name = graphene.String()
-    dns_server_search_order = graphene.String()
 
 class KernelInfo(graphene.ObjectType):
     version = graphene.String()
@@ -257,11 +226,11 @@ class Query(graphene.ObjectType):
                     #type=item['type']
             )
 
-    interface_details = graphene.List(InterfaceDetails)
+    interface_details = graphene.List(interface_details.InterfaceDetails)
 
     def resolve_interface_details(self, args, context, info):
         for item in query.run('select * from interface_details'):
-            yield InterfaceDetails(
+            yield interface_details.InterfaceDetails(
                     interface=item['interface'],
                     mac=item['mac'],
                     type=item['type'],
