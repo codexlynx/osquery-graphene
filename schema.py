@@ -3,21 +3,14 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          hash, interface_addresses, \
                          interface_details, kernel_info, \
                          listening_ports, logged_in_users, \
-                         os_version, platform_info
+                         os_version, platform_info, \
+                         process_open_sockets
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-class ProcessOpenSockets(graphene.ObjectType):
-    pid = graphene.String()
-    fd = graphene.String()
-    socket = graphene.String()
-    family = graphene.String()
-    protocol = graphene.String()
-    local_address = graphene.String()
-    remote_address = graphene.String()
 
 class Processes(graphene.ObjectType):
     pid = graphene.String()
@@ -289,11 +282,11 @@ class Query(graphene.ObjectType):
                     extra=item['extra']
             )
 
-    process_open_sockets = graphene.List(ProcessOpenSockets)
+    process_open_sockets = graphene.List(process_open_sockets.ProcessOpenSockets)
 
     def resolve_process_open_sockets(self, args, context, info):
         for item in query.run('select * from process_open_sockets'):
-            yield ProcessOpenSockets(
+            yield process_open_sockets.ProcessOpenSockets(
                     pid=item['pid'],
                     fd=item['fd'],
                     socket=item['socket'],
