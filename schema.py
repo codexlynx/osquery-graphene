@@ -5,29 +5,13 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          listening_ports, logged_in_users, \
                          os_version, platform_info, \
                          process_open_sockets, processes, \
-                         routes, startup_items
+                         routes, startup_items, system_info
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class SystemInfo(graphene.ObjectType):
-    hostname = graphene.String()
-    uuid = graphene.String()
-    cpu_type = graphene.String()
-    cpu_subtype = graphene.String()
-    cpu_brand = graphene.String()
-    cpu_physical_cores = graphene.String()
-    cpu_logical_cores = graphene.String()
-    physical_memory = graphene.String()
-    hardware_vendor = graphene.String()
-    hardware_model = graphene.String()
-    hardware_version = graphene.String()
-    hardware_serial = graphene.String()
-    computer_name = graphene.String()
-    #local_hostname = graphene.String()
 
 class Uptime(graphene.ObjectType):
     days = graphene.String()
@@ -312,11 +296,11 @@ class Query(graphene.ObjectType):
                     username=item['username']
             )
 
-    system_info = graphene.List(SystemInfo)
+    system_info = graphene.List(system_info.SystemInfo)
 
     def resolve_system_info(self, args, context, info):
         for item in query.run('select * from system_info'):
-            yield SystemInfo(
+            yield system_info.SystemInfo(
                     hostname=item['hostname'],
                     uuid=item['uuid'],
                     cpu_type=item['cpu_type'],
