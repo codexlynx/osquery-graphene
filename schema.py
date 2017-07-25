@@ -6,24 +6,12 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          os_version, platform_info, \
                          process_open_sockets, processes, \
                          routes, startup_items, system_info, \
-                         uptime
+                         uptime, users
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
-
-
-class Users(graphene.ObjectType):
-    uid = graphene.String()
-    gid = graphene.String()
-    gid_signed = graphene.String()
-    uid_signed = graphene.String()
-    username = graphene.String()
-    description = graphene.String()
-    directory = graphene.String()
-    shell = graphene.String()
-    uuid = graphene.String()
 
 class Query(graphene.ObjectType):
 
@@ -323,11 +311,11 @@ class Query(graphene.ObjectType):
                     total_seconds=item['total_seconds']
             )
 
-    users = graphene.List(Users)
+    users = graphene.List(users.Users)
 
     def resolve_users(self, args, context, info):
         for item in query.run('select * from users'):
-            yield Users(
+            yield users.Users(
                     uid=item['uid'],
                     gid=item['gid'],
                     gid_signed=item['gid_signed'],
