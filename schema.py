@@ -3,23 +3,12 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          hash, interface_addresses, \
                          interface_details, kernel_info, \
                          listening_ports, logged_in_users, \
-                         os_version
+                         os_version, platform_info
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
-
-
-class PlatformInfo(graphene.ObjectType):
-    vendor = graphene.String()
-    version = graphene.String()
-    date = graphene.String()
-    revision = graphene.String()
-    address = graphene.String()
-    size = graphene.String()
-    volume_size = graphene.String()
-    extra = graphene.String()
 
 class ProcessOpenSockets(graphene.ObjectType):
     pid = graphene.String()
@@ -285,11 +274,11 @@ class Query(graphene.ObjectType):
                     codename=item['codename']
             )
 
-    platform_info = graphene.List(PlatformInfo)
+    platform_info = graphene.List(platform_info.PlatformInfo)
 
     def resolve_platform_info(self, args, context, info):
         for item in query.run('select * from platform_info'):
-            yield PlatformInfo(
+            yield platform_info.PlatformInfo(
                     vendor=item['vendor'],
                     version=item['version'],
                     date=date['date'],
