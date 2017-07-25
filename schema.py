@@ -1,19 +1,13 @@
 from schema_types import arp_cache, cpuid, etc_hosts, \
                          etc_protocols, etc_services, \
                          hash, interface_addresses, \
-                         interface_details
+                         interface_details, kernel_info
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class KernelInfo(graphene.ObjectType):
-    version = graphene.String()
-    arguments = graphene.String()
-    path = graphene.String()
-    device = graphene.String()
 
 class ListeningPorts(graphene.ObjectType):
     pid = graphene.String()
@@ -263,11 +257,11 @@ class Query(graphene.ObjectType):
                     dns_server_search_order=item['dns_server_search_order']
             )
 
-    kernel_info = graphene.List(KernelInfo)
+    kernel_info = graphene.List(kernel_info.KernelInfo)
 
     def resolve_kernel_info(self, args, context, info):
         for item in query.run('select * from kernel_info'):
-            yield KernelInfo(
+            yield kernel_info.KernelInfo(
                     version=item['version'],
                     arguments=item['arguments'],
                     path=item['path'],
