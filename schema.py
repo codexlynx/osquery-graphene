@@ -5,22 +5,13 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          listening_ports, logged_in_users, \
                          os_version, platform_info, \
                          process_open_sockets, processes, \
-                         routes
+                         routes, startup_items
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class StartupItems(graphene.ObjectType):
-    name = graphene.String()
-    path = graphene.String()
-    args = graphene.String()
-    type = graphene.String()
-    source = graphene.String()
-    status = graphene.String()
-    username = graphene.String()
 
 class SystemInfo(graphene.ObjectType):
     hostname = graphene.String()
@@ -307,11 +298,11 @@ class Query(graphene.ObjectType):
                     type=item['type']
             )
 
-    startup_items = graphene.List(StartupItems)
+    startup_items = graphene.List(startup_items.StartupItems)
 
     def resolve_startup_items(self, args, context, info):
         for item in query.run('select * from startup_items'):
-            yield StartupItems(
+            yield startup_items.StartupItems(
                     name=item['name'],
                     path=item['path'],
                     args=item['args'],
