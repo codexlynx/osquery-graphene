@@ -5,20 +5,14 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          listening_ports, logged_in_users, \
                          os_version, platform_info, \
                          process_open_sockets, processes, \
-                         routes, startup_items, system_info
+                         routes, startup_items, system_info, \
+                         uptime
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class Uptime(graphene.ObjectType):
-    days = graphene.String()
-    hours = graphene.String()
-    minutes = graphene.String()
-    seconds = graphene.String()
-    total_seconds = graphene.String()
 
 class Users(graphene.ObjectType):
     uid = graphene.String()
@@ -317,11 +311,11 @@ class Query(graphene.ObjectType):
                     #local_hostname=item['local_hostname']
             )
 
-    uptime = graphene.List(Uptime)
+    uptime = graphene.List(uptime.Uptime)
 
     def resolve_uptime(self, args, context, info):
         for item in query.run('select * from uptime'):
-            yield Uptime(
+            yield uptime.Uptime(
                     days=item['days'],
                     hours=item['hours'],
                     minutes=item['minutes'],
