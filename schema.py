@@ -2,21 +2,13 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          etc_protocols, etc_services, \
                          hash, interface_addresses, \
                          interface_details, kernel_info, \
-                         listening_ports
+                         listening_ports, logged_in_users
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class LoggedInUsers(graphene.ObjectType):
-    type = graphene.String()
-    user = graphene.String()
-    tty = graphene.String()
-    host = graphene.String()
-    time = graphene.String()
-    pid = graphene.String()
 
 class OsVersion(graphene.ObjectType):
     name = graphene.String()
@@ -274,11 +266,11 @@ class Query(graphene.ObjectType):
                     address=item['address']
             )
 
-    logged_in_users = graphene.List(LoggedInUsers)
+    logged_in_users = graphene.List(logged_in_users.LoggedInUsers)
 
     def resolve_logged_in_users(self, args, context, info):
         for item in query.run('select * from logged_in_users'):
-            yield LoggedInUsers(
+            yield logged_in_users.LoggedInUsers(
                     type=item['type'],
                     user=item['user'],
                     tty=item['tty'],
