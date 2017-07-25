@@ -4,39 +4,13 @@ from schema_types import arp_cache, cpuid, etc_hosts, \
                          interface_details, kernel_info, \
                          listening_ports, logged_in_users, \
                          os_version, platform_info, \
-                         process_open_sockets
+                         process_open_sockets, processes
 import graphene
 import osquery
 import utils
 
 query = osquery.OSQuery()
 
-
-class Processes(graphene.ObjectType):
-    pid = graphene.String()
-    name = graphene.String()
-    path = graphene.String()
-    cmdline = graphene.String()
-    state = graphene.String()
-    cwd = graphene.String()
-    root = graphene.String()
-    uid = graphene.String()
-    gid = graphene.String()
-    euid = graphene.String()
-    egid = graphene.String()
-    suid = graphene.String()
-    sgid = graphene.String()
-    on_disk = graphene.String()
-    wired_size = graphene.String()
-    resident_size = graphene.String()
-    total_size = graphene.String()
-    user_time = graphene.String()
-    system_time = graphene.String()
-    start_time = graphene.String()
-    parent = graphene.String()
-    pgroup = graphene.String()
-    threads = graphene.String()
-    nice = graphene.String()
 
 class Routes(graphene.ObjectType):
     destination = graphene.String()
@@ -296,11 +270,11 @@ class Query(graphene.ObjectType):
                     remote_address=remote_address['remote_address']
             )
 
-    processes = graphene.List(Processes)
+    processes = graphene.List(processes.Processes)
 
     def resolve_processes(self, args, context, info):
         for item in query.run('select * from processes'):
-            yield Processes(
+            yield processes.Processes(
                     pid=item['pid'],
                     name=item['name'],
                     path=item['path'],
