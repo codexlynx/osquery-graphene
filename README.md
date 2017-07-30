@@ -3,6 +3,7 @@ It is a web service that allows us to query osquery using GraphQL query language
 
 [![AUR](https://img.shields.io/aur/license/yaourt.svg)](blob/master/LICENSE)
 ![python](https://img.shields.io/badge/python-3-green.svg?style=flat)
+[![Build Status](https://travis-ci.org/codexlynx/osquery-graphene.svg?branch=master)](https://travis-ci.org/codexlynx/osquery-graphene)
 
 ---
 
