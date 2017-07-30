@@ -16,7 +16,7 @@ Graphene is a Python library for building APIs with GraphQL easily. GraphQL is a
 
 > GPL (GNU General Public License) 3.0
 
-More info: [here](blob/master/LICENSE)
+More info: [here](LICENSE)
 
 ### About
 This project was created by: __@codexlynx__.
